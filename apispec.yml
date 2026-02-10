@@ -1,0 +1,608 @@
+openapi: "3.0.3"
+info:
+  title: Contact Management API
+  description: API for contact management
+  version: "1.0"
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/auth/register:
+    post:
+      tags:
+        - Authentication API
+      description: Register a new user
+      summary: Register User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              {
+                type: object,
+                properties:
+                  {
+                    username: { type: string },
+                    password: { type: string },
+                    name: { type: string },
+                  },
+              }
+      responses:
+        "200":
+          description: Success Register User
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  {
+                    code: { type: number },
+                    status: { type: string },
+                    data:
+                      {
+                        type: object,
+                        properties:
+                          {
+                            username: { type: string },
+                            name: { type: string },
+                          },
+                      },
+                  }
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication API
+      description: Login a user
+      summary: Login User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              {
+                type: object,
+                properties:
+                  { username: { type: string }, password: { type: string } },
+              }
+      responses:
+        "200":
+          description: Success Login User
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  {
+                    code: { type: number },
+                    status: { type: string },
+                    data:
+                      {
+                        type: object,
+                        properties:
+                          {
+                            access_token: { type: string },
+                            refresh_token: { type: string },
+                          },
+                      },
+                  }
+  /api/auth/refresh:
+    post:
+      tags:
+        - Authentication API
+      description: Refresh a token
+      summary: Refresh Token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              {
+                type: object,
+                properties:
+                  {
+                    refresh_token: { type: string },
+                    device_info: { type: string },
+                    fcm: { type: string },
+                  },
+              }
+      responses:
+        "200":
+          description: Success Refresh Token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  {
+                    code: { type: number },
+                    status: { type: string },
+                    data:
+                      {
+                        type: object,
+                        properties:
+                          {
+                            access_token: { type: string },
+                            refresh_token: { type: string },
+                          },
+                      },
+                  }
+  /api/auth/logout:
+    post:
+      tags:
+        - Authentication API
+      description: Logout
+      summary: Logout
+      requestBody:
+        content:
+          application/json:
+            schema:
+              { type: object, properties: { refresh_token: { type: string } } }
+      responses:
+        "200":
+          description: Success Logout
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  {
+                    code: { type: number },
+                    status: { type: string },
+                    data: { type: string },
+                  }
+  /api/users/current:
+    patch:
+      security:
+        - AuthToken: []
+      tags:
+        - Users API
+      description: Update a user
+      summary: Update User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              {
+                type: object,
+                properties:
+                  { name: { type: string }, password: { type: string } },
+              }
+      responses:
+        "200":
+          description: Success Update User
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  {
+                    code: { type: number },
+                    status: { type: string },
+                    data:
+                      {
+                        type: object,
+                        properties:
+                          {
+                            username: { type: string },
+                            name: { type: string },
+                          },
+                      },
+                  }
+    get:
+      security:
+        - AuthToken: []
+      tags:
+        - Users API
+      description: Get a user
+      summary: Get User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              {
+                type: object,
+                properties:
+                  { username: { type: string }, name: { type: string } },
+              }
+      responses:
+        "200":
+          description: Success Get User
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  {
+                    code: { type: number },
+                    status: { type: string },
+                    data:
+                      {
+                        type: object,
+                        properties:
+                          {
+                            username: { type: string },
+                            name: { type: string },
+                          },
+                      },
+                  }
+  /api/contacts:
+    post:
+      security:
+        - AuthToken: []
+      tags:
+        - Contacts API
+      description: Create a new contact
+      summary: Create Contact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              {
+                type: object,
+                properties:
+                  {
+                    first_name: { type: string },
+                    last_name: { type: string },
+                    email: { type: string },
+                    phone: { type: string },
+                  },
+              }
+      responses:
+        "200":
+          description: Success Create Contact
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  {
+                    code: { type: number },
+                    status: { type: string },
+                    data: { $ref: "#/components/schemas/Contact" },
+                  }
+  /api/contacts/{contactId}:
+    post:
+      security:
+        - AuthToken: []
+      parameters:
+        - name: contactId
+          in: path
+          description: ID of the contact
+          required: true
+          schema:
+            type: integer
+      tags:
+        - Contacts API
+      description: Update a contact
+      summary: Update Contact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              {
+                type: object,
+                properties:
+                  {
+                    first_name: { type: string },
+                    last_name: { type: string },
+                    email: { type: string },
+                    phone: { type: string },
+                  },
+              }
+      responses:
+        "200":
+          description: Success Update Contact by id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  {
+                    code: { type: number },
+                    status: { type: string },
+                    data: { $ref: "#/components/schemas/Contact" },
+                  }
+    get:
+      security:
+        - AuthToken: []
+      parameters:
+        - name: contactId
+          in: path
+          description: ID of the contact
+          required: true
+          schema:
+            type: integer
+      tags:
+        - Contacts API
+      description: Update a contact
+      summary: Update Contact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              {
+                type: object,
+                properties:
+                  {
+                    first_name: { type: string },
+                    last_name: { type: string },
+                    email: { type: string },
+                    phone: { type: string },
+                  },
+              }
+      responses:
+        "200":
+          description: Success get Contact by id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  {
+                    code: { type: number },
+                    status: { type: string },
+                    data: { $ref: "#/components/schemas/Contact" },
+                  }
+    delete:
+      security:
+        - AuthToken: []
+      parameters:
+        - name: contactId
+          in: path
+          description: ID of the contact
+          required: true
+          schema:
+            type: integer
+      tags:
+        - Contacts API
+      description: Delete a contact
+      summary: Delete Contact
+      responses:
+        "200":
+          description: Success Delete Contact by id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  {
+                    code: { type: number },
+                    status: { type: string },
+                    data: { type: string },
+                  }
+  /api/contacts?name={name}&email={email}&phone={phone}&page={page}&limit={limit}:
+    get:
+      security:
+        - AuthToken: []
+      parameters:
+        - name: name
+          in: query
+          description: Name of the contact
+          required: false
+          schema:
+            type: string
+        - name: email
+          in: query
+          description: Email of the contact
+          required: false
+          schema:
+            type: string
+        - name: phone
+          in: query
+          description: Phone of the contact
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page of the contact
+          required: false
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          description: Limit of the contact
+          required: false
+          schema:
+            type: integer
+      tags:
+        - Contacts API
+      description: Get a list of contacts
+      summary: Get Contacts
+      responses:
+        "200":
+          description: Success Get Contacts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  {
+                    code: { type: number },
+                    status: { type: string },
+                    data:
+                      {
+                        type: array,
+                        items: { $ref: "#/components/schemas/Contact" },
+                      },
+                  }
+  /api/contacts/{contactId}/addresses:
+    post:
+      security:
+        - AuthToken: []
+      parameters:
+        - name: contactId
+          in: path
+          description: ID of the contact
+          required: true
+          schema:
+            type: integer
+      tags:
+        - Contacts Address API
+      description: Create a new address
+      summary: Create Address
+      requestBody:
+        content:
+          application/json:
+            schema:
+              {
+                type: object,
+                properties:
+                  {
+                    street: { type: string },
+                    city: { type: string },
+                    province: { type: string },
+                    country: { type: string },
+                    postal_code: { type: string },
+                  },
+              }
+      responses:
+        "200":
+          description: Success Create Address
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  {
+                    code: { type: number },
+                    status: { type: string },
+                    data: { $ref: "#/components/schemas/Address" },
+                  }
+    get:
+      security:
+        - AuthToken: []
+      parameters:
+        - name: contactId
+          in: path
+          description: ID of the contact
+          required: true
+          schema:
+            type: integer
+      tags:
+        - Contacts Address API
+      description: Get a list of addresses
+      summary: Get Addresses
+      responses:
+        "200":
+          description: Success Get Addresses
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Address" }
+  /api/contacts/{contactId}/addresses/{addressId}:
+    put:
+      security:
+        - AuthToken: []
+      parameters:
+        - name: contactId
+          in: path
+          description: ID of the contact
+          required: true
+          schema:
+            type: integer
+        - name: addressId
+          in: path
+          description: ID of the address
+          required: true
+          schema:
+            type: integer
+      tags:
+        - Contacts Address API
+      description: Update a new address
+      summary: Update Address
+      requestBody:
+        content:
+          application/json:
+            schema:
+              {
+                type: object,
+                properties:
+                  {
+                    street: { type: string },
+                    city: { type: string },
+                    province: { type: string },
+                    country: { type: string },
+                    postal_code: { type: string },
+                  },
+              }
+      responses:
+        "200":
+          description: Success Update Address
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  {
+                    code: { type: number },
+                    status: { type: string },
+                    data: { $ref: "#/components/schemas/Address" },
+                  }
+    get:
+      security:
+        - AuthToken: []
+      parameters:
+        - name: contactId
+          in: path
+          description: ID of the contact
+          required: true
+          schema:
+            type: integer
+        - name: addressId
+          in: path
+          description: ID of the address
+          required: true
+          schema:
+            type: integer
+      tags:
+        - Contacts Address API
+      description: Get a address by contactId and addressId
+      summary: Get Address by contactId and addressId
+      responses:
+        "200":
+          description: Success Get Address by contactId and addressId
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  {
+                    code: { type: number },
+                    status: { type: string },
+                    data: { $ref: "#/components/schemas/Address" },
+                  }
+
+components:
+  securitySchemes:
+    AuthToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Bearer token authentication
+  schemas:
+    Contact:
+      type: object
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+    Address:
+      type: object
+      properties:
+        id:
+          type: integer
+        street:
+          type: string
+        city:
+          type: string
+        province:
+          type: string
+        country:
+          type: string
+        postal_code:
+          type: string
